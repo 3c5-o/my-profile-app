@@ -23,11 +23,12 @@ jobs:
       - name: Build APK with Capacitor
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest
           npx cap init MyProfileApp com.hamad.profile --web-dir my-projec
           npx cap add android
           npx cap sync android
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK File
