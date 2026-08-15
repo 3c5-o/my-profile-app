@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Android APK
 
 on: [push]
 
@@ -7,14 +7,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Build Web to APK
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build APK with Capacitor
         run: |
-          npm install -g nativefier
-          nativefier --name "MyProfileApp" "my-projec/index.html" --platform android
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init MyProfileApp com.hamad.profile --web-dir my-projec
+          npx cap add android
+          npx cap sync android
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Upload APK File
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
